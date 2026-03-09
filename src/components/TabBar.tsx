@@ -30,7 +30,7 @@ export default function TabBar({ tab, setTab, editId }: TabBarProps) {
           className="tab-btn"
           onClick={() => setTab(t.key)}
           style={{
-            color: tab === t.key ? "#080a0f" : "#8a90a0",
+            color: tab === t.key ? "#080a0f" : "#b0b5c0",
             background: tab === t.key ? "#00e5a0" : "none",
           }}
         >

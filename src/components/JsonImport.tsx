@@ -36,7 +36,7 @@ export default function JsonImport({
         <div
           style={{
             fontSize: 10,
-            color: "#4a5060",
+            color: "#b0b5c0",
             letterSpacing: "0.12em",
             marginBottom: 12,
           }}
@@ -102,7 +102,7 @@ export default function JsonImport({
         <div
           style={{
             fontSize: 10,
-            color: "#4a5060",
+            color: "#b0b5c0",
             letterSpacing: "0.12em",
             marginBottom: 12,
           }}
@@ -173,7 +173,7 @@ export default function JsonImport({
               <>
                 <div style={{ display: "flex", gap: 28, marginBottom: 14 }}>
                   <div>
-                    <div style={{ fontSize: 9, color: "#4a5060", letterSpacing: "0.1em" }}>
+                    <div style={{ fontSize: 9, color: "#b0b5c0", letterSpacing: "0.1em" }}>
                       IMPORTED
                     </div>
                     <div style={{ fontSize: 24, fontWeight: 600, color: "#00e5a0" }}>
@@ -182,7 +182,7 @@ export default function JsonImport({
                   </div>
                   {importResult.incomplete! > 0 && (
                     <div>
-                      <div style={{ fontSize: 9, color: "#4a5060", letterSpacing: "0.1em" }}>
+                      <div style={{ fontSize: 9, color: "#b0b5c0", letterSpacing: "0.1em" }}>
                         OPEN POS.
                       </div>
                       <div style={{ fontSize: 24, fontWeight: 600, color: "#ff9f43" }}>
@@ -192,7 +192,7 @@ export default function JsonImport({
                   )}
                   {importResult.skipped! > 0 && (
                     <div>
-                      <div style={{ fontSize: 9, color: "#4a5060", letterSpacing: "0.1em" }}>
+                      <div style={{ fontSize: 9, color: "#b0b5c0", letterSpacing: "0.1em" }}>
                         SKIPPED
                       </div>
                       <div style={{ fontSize: 24, fontWeight: 600, color: "#ff5470" }}>
@@ -230,7 +230,7 @@ export default function JsonImport({
                       borderRadius: 6,
                     }}
                   >
-                    <span style={{ color: "#4a5060" }}>Row {e.index}: </span>
+                    <span style={{ color: "#b0b5c0" }}>Row {e.index}: </span>
                     {e.errors.join(", ")}
                     <div
                       style={{

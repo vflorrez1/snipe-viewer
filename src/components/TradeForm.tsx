@@ -45,7 +45,7 @@ export default function TradeForm({
       <div
         style={{
           fontSize: 10,
-          color: "#4a5060",
+          color: "#b0b5c0",
           letterSpacing: "0.12em",
           marginBottom: 24,
         }}
@@ -72,7 +72,7 @@ export default function TradeForm({
               <div
                 style={{
                   fontSize: 9,
-                  color: formErrors[f.key] ? "#ff5470" : "#4a5060",
+                  color: formErrors[f.key] ? "#ff5470" : "#b0b5c0",
                   letterSpacing: "0.12em",
                 }}
               >
@@ -149,7 +149,7 @@ export default function TradeForm({
               }}
             >
               <div>
-                <div style={{ fontSize: 9, color: "#4a5060", letterSpacing: "0.1em" }}>
+                <div style={{ fontSize: 9, color: "#b0b5c0", letterSpacing: "0.1em" }}>
                   ESTIMATED P&L
                 </div>
                 <div
@@ -163,7 +163,7 @@ export default function TradeForm({
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 9, color: "#4a5060", letterSpacing: "0.1em" }}>
+                <div style={{ fontSize: 9, color: "#b0b5c0", letterSpacing: "0.1em" }}>
                   RETURN
                 </div>
                 <div

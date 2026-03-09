@@ -221,7 +221,7 @@ export default function App() {
           style={{
             marginTop: 28,
             fontSize: 10,
-            color: "#8a90a0",
+            color: "#b0b5c0",
             letterSpacing: "0.08em",
           }}
         >

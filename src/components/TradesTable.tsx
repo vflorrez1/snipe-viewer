@@ -32,7 +32,7 @@ export default function TradesTable({ sorted, onEdit, onDelete }: TradesTablePro
                   style={{
                     padding: "12px 14px",
                     textAlign: "left",
-                    color: "#4a5060",
+                    color: "#b0b5c0",
                     fontSize: 9,
                     letterSpacing: "0.12em",
                     fontWeight: 500,
@@ -109,7 +109,7 @@ export default function TradesTable({ sorted, onEdit, onDelete }: TradesTablePro
                   <td
                     style={{
                       padding: "10px 14px",
-                      color: open ? "#4a5060" : p! >= 0 ? "#00e5a0" : "#ff5470",
+                      color: open ? "#b0b5c0" : p! >= 0 ? "#00e5a0" : "#ff5470",
                       fontWeight: 600,
                     }}
                   >
@@ -118,7 +118,7 @@ export default function TradesTable({ sorted, onEdit, onDelete }: TradesTablePro
                   <td
                     style={{
                       padding: "10px 14px",
-                      color: open ? "#4a5060" : r! >= 0 ? "#00e5a0" : "#ff5470",
+                      color: open ? "#b0b5c0" : r! >= 0 ? "#00e5a0" : "#ff5470",
                     }}
                   >
                     {open ? "\u2014" : `${r! >= 0 ? "+" : ""}${fmt(r!, 2)}%`}
@@ -148,7 +148,7 @@ export default function TradesTable({ sorted, onEdit, onDelete }: TradesTablePro
               <tr>
                 <td
                   colSpan={10}
-                  style={{ padding: 40, textAlign: "center", color: "#4a5060" }}
+                  style={{ padding: 40, textAlign: "center", color: "#b0b5c0" }}
                 >
                   No trades — import JSON or add manually.
                 </td>

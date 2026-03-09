@@ -35,7 +35,7 @@ export default function StatsGrid({ stats }: StatsGridProps) {
     {
       label: "OPEN POS.",
       value: `${stats.openCount}`,
-      color: stats.openCount > 0 ? "#ff9f43" : "#4a5060",
+      color: stats.openCount > 0 ? "#ff9f43" : "#b0b5c0",
     },
     {
       label: "TOTAL FEES",
@@ -68,7 +68,7 @@ export default function StatsGrid({ stats }: StatsGridProps) {
           <div
             style={{
               fontSize: 9,
-              color: "#8a90a0",
+              color: "#b0b5c0",
               letterSpacing: "0.12em",
               marginBottom: 8,
             }}

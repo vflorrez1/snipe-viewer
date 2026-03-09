@@ -36,7 +36,7 @@ export default function Header({ stats, tradeCount }: HeaderProps) {
             {stats.openCount} OPEN
           </span>
         )}
-        <span style={{ fontSize: 10, color: "#4a5060" }}>
+        <span style={{ fontSize: 10, color: "#b0b5c0" }}>
           {tradeCount} TRADES LOADED
         </span>
       </div>
