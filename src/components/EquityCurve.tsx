@@ -60,7 +60,7 @@ export default function EquityCurve({ curve }: EquityCurveProps) {
       <div
         style={{
           fontSize: 10,
-          color: "#4a5060",
+          color: "#8a90a0",
           letterSpacing: "0.12em",
           marginBottom: 16,
         }}
@@ -68,15 +68,15 @@ export default function EquityCurve({ curve }: EquityCurveProps) {
         EQUITY CURVE — starting $10,000
       </div>
       <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={curve}>
+        <LineChart data={curve} margin={{ left: -15, right: 10, top: 15, bottom: 5 }}>
           <XAxis
             dataKey="date"
-            tick={{ fill: "#4a5060", fontSize: 10 }}
+            tick={{ fill: "#8a90a0", fontSize: 10 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fill: "#4a5060", fontSize: 10 }}
+            tick={{ fill: "#8a90a0", fontSize: 10 }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`}

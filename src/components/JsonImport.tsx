@@ -31,7 +31,7 @@ export default function JsonImport({
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 24 }}>
       <div>
         <div
           style={{
@@ -141,7 +141,7 @@ export default function JsonImport({
                 padding: "2px 0",
               }}
             >
-              <span style={{ color: r.req ? "#00e5a0" : "#3a3d50", minWidth: 160 }}>
+              <span style={{ color: r.req ? "#00e5a0" : "#3a3d50", minWidth: 140, flexShrink: 0 }}>
                 {r.field}
               </span>
               <span style={{ color: r.req ? "#9ca3b0" : "#2a2d3a" }}>

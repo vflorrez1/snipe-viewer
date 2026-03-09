@@ -24,7 +24,7 @@ export default function TradesTable({ sorted, onEdit, onDelete }: TradesTablePro
           <thead>
             <tr style={{ borderBottom: "1px solid #1e2130" }}>
               {[
-                "DATE", "EXCHANGE", "PAIR", "SIDE", "ENTRY",
+                "DATE", "PAIR", "SIDE", "ENTRY",
                 "EXIT", "SIZE", "FEE", "P&L", "RETURN", "",
               ].map((h) => (
                 <th
@@ -60,9 +60,6 @@ export default function TradesTable({ sorted, onEdit, onDelete }: TradesTablePro
                 >
                   <td style={{ padding: "10px 14px", color: "#9ca3b0", whiteSpace: "nowrap" }}>
                     {t.date}
-                  </td>
-                  <td style={{ padding: "10px 14px", color: "#4a5060", fontSize: 10 }}>
-                    {t.exchange || "\u2014"}
                   </td>
                   <td style={{ padding: "10px 14px", fontWeight: 600 }}>
                     {t.pair}
@@ -150,7 +147,7 @@ export default function TradesTable({ sorted, onEdit, onDelete }: TradesTablePro
             {!sorted.length && (
               <tr>
                 <td
-                  colSpan={11}
+                  colSpan={10}
                   style={{ padding: 40, textAlign: "center", color: "#4a5060" }}
                 >
                   No trades — import JSON or add manually.

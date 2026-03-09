@@ -68,7 +68,7 @@ export default function StatsGrid({ stats }: StatsGridProps) {
           <div
             style={{
               fontSize: 9,
-              color: "#4a5060",
+              color: "#8a90a0",
               letterSpacing: "0.12em",
               marginBottom: 8,
             }}
