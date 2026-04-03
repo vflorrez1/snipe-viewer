@@ -87,19 +87,6 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
   const [tradeFilterAsset, setTradeFilterAsset] = useState("");
   const [tradeFilterResult, setTradeFilterResult] = useState("");
 
-  const loadOverview = useCallback(async (id: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await fetchPortfolioOverview(id);
-      setOverview(data);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   const loadMessages = useCallback(
     async (id: string, offset: number, startDate?: string, endDate?: string) => {
       setLoading(true);
