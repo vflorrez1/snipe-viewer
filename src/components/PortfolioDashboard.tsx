@@ -25,11 +25,16 @@ import {
   fetchTrades,
 } from "../api/portfolio";
 
-export type PortfolioSubTab = "overview" | "positions" | "trades" | "messages" | "log";
+export type PortfolioSubTab =
+  | "overview"
+  | "positions"
+  | "trades"
+  | "messages"
+  | "log";
 
 function useIsMobile(breakpoint = 640) {
   const [isMobile, setIsMobile] = useState(
-    () => typeof window !== "undefined" && window.innerWidth < breakpoint
+    () => typeof window !== "undefined" && window.innerWidth < breakpoint,
   );
   useEffect(() => {
     const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
@@ -55,7 +60,10 @@ interface PortfolioDashboardProps {
   setSubTab: (tab: PortfolioSubTab) => void;
 }
 
-export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashboardProps) {
+export default function PortfolioDashboard({
+  subTab,
+  setSubTab,
+}: PortfolioDashboardProps) {
   const isMobile = useIsMobile();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [activeChannel, setActiveChannel] = useState("");
@@ -88,7 +96,12 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
   const [tradeFilterResult, setTradeFilterResult] = useState("");
 
   const loadMessages = useCallback(
-    async (id: string, offset: number, startDate?: string, endDate?: string) => {
+    async (
+      id: string,
+      offset: number,
+      startDate?: string,
+      endDate?: string,
+    ) => {
       setLoading(true);
       setError(null);
       try {
@@ -107,11 +120,16 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   const loadLog = useCallback(
-    async (id: string, offset: number, startDate?: string, endDate?: string) => {
+    async (
+      id: string,
+      offset: number,
+      startDate?: string,
+      endDate?: string,
+    ) => {
       setLoading(true);
       setError(null);
       try {
@@ -130,7 +148,7 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   const loadTrades = useCallback(
@@ -153,7 +171,7 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Load channels on mount, auto-select the first one
@@ -170,37 +188,35 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
   }, []);
 
   // Load all data when channel changes (not on tab switch)
-  const loadAll = useCallback(
-    async (id: string) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const [overviewData, messagesData, logData, tradesData] = await Promise.all([
+  const loadAll = useCallback(async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [overviewData, messagesData, logData, tradesData] =
+        await Promise.all([
           fetchPortfolioOverview(id),
           fetchMessages(id, { limit: PAGE_SIZE, offset: 0 }),
           fetchProcessingLog(id, { limit: PAGE_SIZE, offset: 0 }),
           fetchTrades(id, { limit: PAGE_SIZE, offset: 0 }),
         ]);
-        setOverview(overviewData);
-        setMessages(messagesData.messages);
-        setMessagesTotal(messagesData.total);
-        setMessagesOffset(0);
-        setLogEntries(logData.entries);
-        setLogTotal(logData.total);
-        setLogOffset(0);
-        setTrades(tradesData.trades);
-        setTradesTotal(tradesData.total);
-        setTradesOffset(0);
-        setTradeFilterAsset("");
-        setTradeFilterResult("");
-      } catch (e) {
-        setError((e as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
+      setOverview(overviewData);
+      setMessages(messagesData.messages);
+      setMessagesTotal(messagesData.total);
+      setMessagesOffset(0);
+      setLogEntries(logData.entries);
+      setLogTotal(logData.total);
+      setLogOffset(0);
+      setTrades(tradesData.trades);
+      setTradesTotal(tradesData.total);
+      setTradesOffset(0);
+      setTradeFilterAsset("");
+      setTradeFilterResult("");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (activeChannel) loadAll(activeChannel);
@@ -209,126 +225,142 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
   const subTabs = PORTFOLIO_SUB_TABS;
 
   return (
-    <div>
+    <div style={{ paddingTop: isMobile ? 18 : 0 }}>
       {/* Channel selector — sticky header */}
       <div
         style={{
           position: "sticky",
-          top: isMobile ? 72 : 0,
+          top: isMobile ? 44 : 0,
           zIndex: 10,
           background: "#080a0f",
-          paddingTop: isMobile ? 0 : 8,
+          paddingTop: isMobile ? 8 : 8,
           paddingBottom: 20,
           borderBottom: "1px solid #1e2130",
           marginBottom: 16,
         }}
       >
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          alignItems: "center",
-        }}
-      >
-        {channelsLoading ? (
-          <span style={{ fontSize: 12, color: "#b0b5c0" }}>Loading channels...</span>
-        ) : channels.length === 0 ? (
-          <span style={{ fontSize: 12, color: "#9ca3b0" }}>No channels available.</span>
-        ) : (
-          <>
-            <label style={{ fontSize: 11, color: "#b0b5c0", whiteSpace: "nowrap" }}>
-              CHANNEL
-            </label>
-            {channels.length === 1 ? (
-              <span style={{ fontSize: 12, color: "#00e5a0", fontWeight: 600 }}>
-                {channels[0].name || channels[0].channelId}
-              </span>
-            ) : (
-              <select
-                value={activeChannel}
-                onChange={(e) => {
-                  setActiveChannel(e.target.value);
-                  setSubTab("overview");
-                }}
-                style={{ maxWidth: 280 }}
-              >
-                {channels.map((ch) => (
-                  <option key={ch.channelId} value={ch.channelId}>
-                    {ch.name || ch.channelId}
-                  </option>
-                ))}
-              </select>
-            )}
-            {!isMobile && (
-              <button
-                className="btn"
-                onClick={() => loadAll(activeChannel)}
-                disabled={loading}
-                style={{
-                  background: "#1e2130",
-                  color: loading ? "#555" : "#9ca3b0",
-                  padding: "6px 14px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {loading ? "Loading..." : "Refresh"}
-              </button>
-            )}
-            {overview && (
-              <span style={{ fontSize: 11, color: "#9ca3b0" }}>
-                Last updated: {new Date(overview.lastUpdated).toLocaleString()}
-              </span>
-            )}
-          </>
-        )}
-      </div>
-
-      {error && (
         <div
           style={{
-            background: "#ff547015",
-            border: "1px solid #ff5470",
-            borderRadius: 8,
-            padding: "12px 16px",
-            color: "#ff5470",
-            fontSize: 12,
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 4 : 10,
+            alignItems: isMobile ? "flex-start" : "center",
           }}
         >
-          {error}
+          {channelsLoading ? (
+            <span style={{ fontSize: 12, color: "#b0b5c0" }}>
+              Loading channels...
+            </span>
+          ) : channels.length === 0 ? (
+            <span style={{ fontSize: 12, color: "#9ca3b0" }}>
+              No channels available.
+            </span>
+          ) : (
+            <>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <label
+                  style={{
+                    fontSize: 11,
+                    color: "#b0b5c0",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  CHANNEL
+                </label>
+                {channels.length === 1 ? (
+                  <span
+                    style={{ fontSize: 12, color: "#00e5a0", fontWeight: 600 }}
+                  >
+                    {channels[0].name || channels[0].channelId}
+                  </span>
+                ) : (
+                  <select
+                    value={activeChannel}
+                    onChange={(e) => {
+                      setActiveChannel(e.target.value);
+                      setSubTab("overview");
+                    }}
+                    style={{ maxWidth: 280 }}
+                  >
+                    {channels.map((ch) => (
+                      <option key={ch.channelId} value={ch.channelId}>
+                        {ch.name || ch.channelId}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {!isMobile && (
+                  <button
+                    className="btn"
+                    onClick={() => loadAll(activeChannel)}
+                    disabled={loading}
+                    style={{
+                      background: "#1e2130",
+                      color: loading ? "#555" : "#9ca3b0",
+                      padding: "6px 14px",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {loading ? "Loading..." : "Refresh"}
+                  </button>
+                )}
+              </div>
+              {overview && (
+                <span style={{ fontSize: 11, color: "#9ca3b0" }}>
+                  Last updated:{" "}
+                  {new Date(overview.lastUpdated).toLocaleString()}
+                </span>
+              )}
+            </>
+          )}
         </div>
-      )}
 
-      {activeChannel && (
-        <>
-          {/* Sub-tab bar (hidden on mobile — FAB handles it) */}
+        {error && (
           <div
-            className="desktop-only"
             style={{
-              display: "flex",
-              gap: 4,
-              background: "#0f1117",
+              background: "#ff547015",
+              border: "1px solid #ff5470",
               borderRadius: 8,
-              padding: 4,
-              width: "fit-content",
-              border: "1px solid #1e2130",
+              padding: "12px 16px",
+              color: "#ff5470",
+              fontSize: 12,
             }}
           >
-            {subTabs.map((t) => (
-              <button
-                key={t.key}
-                className="tab-btn"
-                onClick={() => setSubTab(t.key)}
-                style={{
-                  color: subTab === t.key ? "#080a0f" : "#b0b5c0",
-                  background: subTab === t.key ? "#00e5a0" : "none",
-                }}
-              >
-                {t.label}
-              </button>
-            ))}
+            {error}
           </div>
-        </>
-      )}
+        )}
+
+        {activeChannel && (
+          <>
+            {/* Sub-tab bar (hidden on mobile — FAB handles it) */}
+            <div
+              className="desktop-only"
+              style={{
+                display: "flex",
+                gap: 4,
+                background: "#0f1117",
+                borderRadius: 8,
+                padding: 4,
+                width: "fit-content",
+                border: "1px solid #1e2130",
+              }}
+            >
+              {subTabs.map((t) => (
+                <button
+                  key={t.key}
+                  className="tab-btn"
+                  onClick={() => setSubTab(t.key)}
+                  style={{
+                    color: subTab === t.key ? "#080a0f" : "#b0b5c0",
+                    background: subTab === t.key ? "#00e5a0" : "none",
+                  }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {activeChannel && (
@@ -340,7 +372,10 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
           )}
 
           {!loading && subTab === "overview" && overview && (
-            <StatsOverview stats={overview.stats} closedTrades={overview.closedTrades} />
+            <StatsOverview
+              stats={overview.stats}
+              closedTrades={overview.closedTrades}
+            />
           )}
 
           {!loading && subTab === "positions" && overview && (
@@ -363,7 +398,12 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
                 loadTrades(activeChannel, 0, tradeFilterAsset, v);
               }}
               onPage={(offset) =>
-                loadTrades(activeChannel, offset, tradeFilterAsset, tradeFilterResult)
+                loadTrades(
+                  activeChannel,
+                  offset,
+                  tradeFilterAsset,
+                  tradeFilterResult,
+                )
               }
             />
           )}
@@ -373,12 +413,21 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
               messages={messages}
               total={messagesTotal}
               offset={messagesOffset}
-              onPage={(offset) => loadMessages(activeChannel, offset, messagesStartDate, messagesEndDate)}
+              onPage={(offset) =>
+                loadMessages(
+                  activeChannel,
+                  offset,
+                  messagesStartDate,
+                  messagesEndDate,
+                )
+              }
               startDate={messagesStartDate}
               endDate={messagesEndDate}
-              onStartDate={setMessagesStartDate}
-              onEndDate={setMessagesEndDate}
-              onApplyFilter={() => loadMessages(activeChannel, 0, messagesStartDate, messagesEndDate)}
+              onDateChange={(start, end) => {
+                setMessagesStartDate(start);
+                setMessagesEndDate(end);
+                loadMessages(activeChannel, 0, start, end);
+              }}
               onClearFilter={() => {
                 setMessagesStartDate("");
                 setMessagesEndDate("");
@@ -392,12 +441,16 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
               entries={logEntries}
               total={logTotal}
               offset={logOffset}
-              onPage={(offset) => loadLog(activeChannel, offset, logStartDate, logEndDate)}
+              onPage={(offset) =>
+                loadLog(activeChannel, offset, logStartDate, logEndDate)
+              }
               startDate={logStartDate}
               endDate={logEndDate}
-              onStartDate={setLogStartDate}
-              onEndDate={setLogEndDate}
-              onApplyFilter={() => loadLog(activeChannel, 0, logStartDate, logEndDate)}
+              onDateChange={(start, end) => {
+                setLogStartDate(start);
+                setLogEndDate(end);
+                loadLog(activeChannel, 0, start, end);
+              }}
               onClearFilter={() => {
                 setLogStartDate("");
                 setLogEndDate("");
@@ -443,10 +496,14 @@ export default function PortfolioDashboard({ subTab, setSubTab }: PortfolioDashb
 
 // --- Sub-components ---
 
-function PortfolioEquityCurve({ closedTrades }: { closedTrades: ClosedTrade[] }) {
+function PortfolioEquityCurve({
+  closedTrades,
+}: {
+  closedTrades: ClosedTrade[];
+}) {
   const curve = useMemo(() => {
     const sorted = [...closedTrades].sort(
-      (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime()
+      (a, b) => new Date(a.closedAt).getTime() - new Date(b.closedAt).getTime(),
     );
     let equity = 10000;
     const points = [{ date: "Start", equity: 10000, pnl: 0, asset: "" }];
@@ -526,7 +583,10 @@ function PortfolioEquityCurve({ closedTrades }: { closedTrades: ClosedTrade[] })
         )}
       </div>
       <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={curve.points} margin={{ left: -15, right: 10, top: 15, bottom: 5 }}>
+        <LineChart
+          data={curve.points}
+          margin={{ left: -15, right: 10, top: 15, bottom: 5 }}
+        >
           <XAxis
             dataKey="date"
             tick={{ fill: "#b0b5c0", fontSize: 10 }}
@@ -553,7 +613,9 @@ function PortfolioEquityCurve({ closedTrades }: { closedTrades: ClosedTrade[] })
                     fontSize: 12,
                   }}
                 >
-                  <div style={{ color: "#9ca3b0", marginBottom: 4 }}>{d.date}</div>
+                  <div style={{ color: "#9ca3b0", marginBottom: 4 }}>
+                    {d.date}
+                  </div>
                   <div style={{ color: "#e8eaf0", fontWeight: 600 }}>
                     Equity: ${d.equity.toLocaleString()}
                   </div>
@@ -581,7 +643,13 @@ function PortfolioEquityCurve({ closedTrades }: { closedTrades: ClosedTrade[] })
   );
 }
 
-function StatsOverview({ stats, closedTrades }: { stats: PortfolioStats; closedTrades: ClosedTrade[] }) {
+function StatsOverview({
+  stats,
+  closedTrades,
+}: {
+  stats: PortfolioStats;
+  closedTrades: ClosedTrade[];
+}) {
   const cards = [
     {
       label: "TOTAL TRADES",
@@ -596,7 +664,8 @@ function StatsOverview({ stats, closedTrades }: { stats: PortfolioStats; closedT
     {
       label: "WIN RATE",
       value: stats.winRate != null ? `${stats.winRate.toFixed(1)}%` : "--",
-      color: stats.winRate != null && stats.winRate >= 50 ? "#00e5a0" : "#ff9f43",
+      color:
+        stats.winRate != null && stats.winRate >= 50 ? "#00e5a0" : "#ff9f43",
     },
     {
       label: "W / L",
@@ -615,18 +684,13 @@ function StatsOverview({ stats, closedTrades }: { stats: PortfolioStats; closedT
     },
     {
       label: "BEST TRADE",
-      value:
-        stats.bestTrade != null
-          ? `+${stats.bestTrade.toFixed(2)}%`
-          : "--",
+      value: stats.bestTrade != null ? `+${stats.bestTrade.toFixed(2)}%` : "--",
       color: "#00e5a0",
     },
     {
       label: "WORST TRADE",
       value:
-        stats.worstTrade != null
-          ? `${stats.worstTrade.toFixed(2)}%`
-          : "--",
+        stats.worstTrade != null ? `${stats.worstTrade.toFixed(2)}%` : "--",
       color: "#ff5470",
     },
     {
@@ -698,7 +762,13 @@ function StatsOverview({ stats, closedTrades }: { stats: PortfolioStats; closedT
             PERFORMANCE BY ASSET
           </div>
           <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: 12,
+              }}
+            >
               <thead>
                 <tr style={{ borderBottom: "1px solid #1e2130" }}>
                   {["ASSET", "WINS", "LOSSES", "TOTAL PNL %"].map((h) => (
@@ -721,9 +791,15 @@ function StatsOverview({ stats, closedTrades }: { stats: PortfolioStats; closedT
               <tbody>
                 {assetEntries.map(([asset, data]) => (
                   <tr key={asset} style={{ borderBottom: "1px solid #12151e" }}>
-                    <td style={{ padding: "10px 14px", fontWeight: 600 }}>{asset}</td>
-                    <td style={{ padding: "10px 14px", color: "#00e5a0" }}>{data.wins}</td>
-                    <td style={{ padding: "10px 14px", color: "#ff5470" }}>{data.losses}</td>
+                    <td style={{ padding: "10px 14px", fontWeight: 600 }}>
+                      {asset}
+                    </td>
+                    <td style={{ padding: "10px 14px", color: "#00e5a0" }}>
+                      {data.wins}
+                    </td>
+                    <td style={{ padding: "10px 14px", color: "#ff5470" }}>
+                      {data.losses}
+                    </td>
                     <td
                       style={{
                         padding: "10px 14px",
@@ -860,8 +936,7 @@ function OpenPositionsTable({ positions }: { positions: OpenPosition[] }) {
                         color: tp.status === "HIT" ? "#00e5a0" : "#9ca3b0",
                       }}
                     >
-                      {tp.price != null ? `$${tp.price}` : "--"}{" "}
-                      ({tp.portion}){" "}
+                      {tp.price != null ? `$${tp.price}` : "--"} ({tp.portion}){" "}
                       {tp.status === "HIT" && "HIT"}
                     </span>
                   ))}
@@ -871,7 +946,9 @@ function OpenPositionsTable({ positions }: { positions: OpenPosition[] }) {
 
             {/* Notes */}
             {pos.notes && (
-              <div style={{ fontSize: 11, color: "#9ca3b0", fontStyle: "italic" }}>
+              <div
+                style={{ fontSize: 11, color: "#9ca3b0", fontStyle: "italic" }}
+              >
                 {pos.notes}
               </div>
             )}
@@ -993,27 +1070,35 @@ function ClosedTradesView({
         }}
       >
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+          <table
+            style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}
+          >
             <thead>
               <tr style={{ borderBottom: "1px solid #1e2130" }}>
-                {["ASSET", "DIRECTION", "ENTRY AVG", "EXIT AVG", "RESULT", "PNL %", "CLOSED"].map(
-                  (h) => (
-                    <th
-                      key={h}
-                      style={{
-                        padding: "12px 14px",
-                        textAlign: "left",
-                        color: "#b0b5c0",
-                        fontSize: 9,
-                        letterSpacing: "0.12em",
-                        fontWeight: 500,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {h}
-                    </th>
-                  )
-                )}
+                {[
+                  "ASSET",
+                  "DIRECTION",
+                  "ENTRY AVG",
+                  "EXIT AVG",
+                  "RESULT",
+                  "PNL %",
+                  "CLOSED",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    style={{
+                      padding: "12px 14px",
+                      textAlign: "left",
+                      color: "#b0b5c0",
+                      fontSize: 9,
+                      letterSpacing: "0.12em",
+                      fontWeight: 500,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -1031,8 +1116,7 @@ function ClosedTradesView({
                       style={{
                         background:
                           t.direction === "LONG" ? "#00e5a015" : "#ff547015",
-                        color:
-                          t.direction === "LONG" ? "#00e5a0" : "#ff5470",
+                        color: t.direction === "LONG" ? "#00e5a0" : "#ff5470",
                         padding: "3px 8px",
                         borderRadius: 4,
                         fontSize: 10,
@@ -1092,7 +1176,11 @@ function ClosedTradesView({
                 <tr>
                   <td
                     colSpan={7}
-                    style={{ padding: 40, textAlign: "center", color: "#b0b5c0" }}
+                    style={{
+                      padding: 40,
+                      textAlign: "center",
+                      color: "#b0b5c0",
+                    }}
                   >
                     No closed trades found.
                   </td>
@@ -1101,63 +1189,113 @@ function ClosedTradesView({
             </tbody>
           </table>
         </div>
-        <Pagination total={total} offset={offset} pageSize={PAGE_SIZE} onPage={onPage} />
+        <Pagination
+          total={total}
+          offset={offset}
+          pageSize={PAGE_SIZE}
+          onPage={onPage}
+        />
       </div>
     </div>
+  );
+}
+
+function DatePickerButton({
+  value,
+  onChange,
+  label,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  label: string;
+}) {
+  return (
+    <label
+      style={{
+        position: "relative",
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        cursor: "pointer",
+      }}
+    >
+      <span style={{ fontSize: 9, color: "#9ca3b0", letterSpacing: "0.1em" }}>
+        {label}
+      </span>
+      <span
+        style={{
+          background: value ? "#1e2130" : "transparent",
+          border: `1px solid ${value ? "#3a3d4a" : "#2a2d3a"}`,
+          borderRadius: 6,
+          padding: "4px 10px",
+          fontSize: 11,
+          color: value ? "#ffffff" : "#9ca3b0",
+          fontFamily: "inherit",
+          minWidth: 80,
+          textAlign: "center",
+        }}
+      >
+        {value || "None"}
+      </span>
+      <input
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => e.preventDefault()}
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0,
+          cursor: "pointer",
+          width: "100%",
+          height: "100%",
+        }}
+      />
+    </label>
   );
 }
 
 function DateRangeFilter({
   startDate,
   endDate,
-  onStartDate,
-  onEndDate,
-  onApply,
+  onChange,
   onClear,
 }: {
   startDate: string;
   endDate: string;
-  onStartDate: (v: string) => void;
-  onEndDate: (v: string) => void;
-  onApply: () => void;
+  onChange: (startDate: string, endDate: string) => void;
   onClear: () => void;
 }) {
   return (
     <div
       style={{
         display: "flex",
-        gap: 8,
+        gap: 12,
         marginBottom: 12,
         alignItems: "center",
         flexWrap: "wrap",
       }}
     >
-      <label style={{ fontSize: 10, color: "#b0b5c0", letterSpacing: "0.1em" }}>FROM</label>
-      <input
-        type="date"
+      <DatePickerButton
+        label="FROM"
         value={startDate}
-        onChange={(e) => onStartDate(e.target.value)}
-        style={{ maxWidth: 150 }}
+        onChange={(v) => onChange(v, endDate)}
       />
-      <label style={{ fontSize: 10, color: "#b0b5c0", letterSpacing: "0.1em" }}>TO</label>
-      <input
-        type="date"
+      <DatePickerButton
+        label="TO"
         value={endDate}
-        onChange={(e) => onEndDate(e.target.value)}
-        style={{ maxWidth: 150 }}
+        onChange={(v) => onChange(startDate, v)}
       />
-      <button
-        className="btn"
-        onClick={onApply}
-        style={{ background: "#00e5a0", color: "#080a0f", padding: "6px 14px" }}
-      >
-        Apply
-      </button>
       {(startDate || endDate) && (
         <button
           className="btn"
           onClick={onClear}
-          style={{ background: "#1e2130", color: "#9ca3b0", padding: "6px 14px" }}
+          style={{
+            background: "#1e2130",
+            color: "#9ca3b0",
+            padding: "4px 10px",
+            fontSize: 10,
+          }}
         >
           Clear
         </button>
@@ -1173,9 +1311,7 @@ function MessagesView({
   onPage,
   startDate,
   endDate,
-  onStartDate,
-  onEndDate,
-  onApplyFilter,
+  onDateChange,
   onClearFilter,
 }: {
   messages: PortfolioMessage[];
@@ -1184,9 +1320,7 @@ function MessagesView({
   onPage: (offset: number) => void;
   startDate: string;
   endDate: string;
-  onStartDate: (v: string) => void;
-  onEndDate: (v: string) => void;
-  onApplyFilter: () => void;
+  onDateChange: (startDate: string, endDate: string) => void;
   onClearFilter: () => void;
 }) {
   return (
@@ -1194,9 +1328,7 @@ function MessagesView({
       <DateRangeFilter
         startDate={startDate}
         endDate={endDate}
-        onStartDate={onStartDate}
-        onEndDate={onEndDate}
-        onApply={onApplyFilter}
+        onChange={onDateChange}
         onClear={onClearFilter}
       />
       <div style={{ fontSize: 11, color: "#9ca3b0", marginBottom: 12 }}>
@@ -1246,7 +1378,12 @@ function MessagesView({
           </div>
         )}
       </div>
-      <Pagination total={total} offset={offset} pageSize={PAGE_SIZE} onPage={onPage} />
+      <Pagination
+        total={total}
+        offset={offset}
+        pageSize={PAGE_SIZE}
+        onPage={onPage}
+      />
     </div>
   );
 }
@@ -1278,9 +1415,7 @@ function ProcessingLogView({
   onPage,
   startDate,
   endDate,
-  onStartDate,
-  onEndDate,
-  onApplyFilter,
+  onDateChange,
   onClearFilter,
 }: {
   entries: ProcessingLogEntry[];
@@ -1289,15 +1424,15 @@ function ProcessingLogView({
   onPage: (offset: number) => void;
   startDate: string;
   endDate: string;
-  onStartDate: (v: string) => void;
-  onEndDate: (v: string) => void;
-  onApplyFilter: () => void;
+  onDateChange: (startDate: string, endDate: string) => void;
   onClearFilter: () => void;
 }) {
   const [minConfidence, setMinConfidence] = useState<string>("");
 
   const filtered = minConfidence
-    ? entries.filter((e) => e.confidence != null && e.confidence >= Number(minConfidence))
+    ? entries.filter(
+        (e) => e.confidence != null && e.confidence >= Number(minConfidence),
+      )
     : entries;
 
   return (
@@ -1305,9 +1440,7 @@ function ProcessingLogView({
       <DateRangeFilter
         startDate={startDate}
         endDate={endDate}
-        onStartDate={onStartDate}
-        onEndDate={onEndDate}
-        onApply={onApplyFilter}
+        onChange={onDateChange}
         onClear={onClearFilter}
       />
       <div
@@ -1319,7 +1452,9 @@ function ProcessingLogView({
           flexWrap: "wrap",
         }}
       >
-        <label style={{ fontSize: 10, color: "#b0b5c0", letterSpacing: "0.1em" }}>
+        <label
+          style={{ fontSize: 10, color: "#b0b5c0", letterSpacing: "0.1em" }}
+        >
           MIN CONFIDENCE
         </label>
         <select
@@ -1341,32 +1476,43 @@ function ProcessingLogView({
       </div>
       <div style={{ display: "grid", gap: 8 }}>
         {filtered.map((e) => (
-          <div key={e.id} className="stat-card" style={{ padding: 0, overflow: "hidden" }}>
+          <div
+            key={e.id}
+            className="stat-card"
+            style={{ padding: 0, overflow: "hidden" }}
+          >
             {/* Header row */}
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "10px 16px",
+                flexDirection: "column",
+                gap: 6,
+                padding: "10px 14px",
                 borderBottom: "1px solid #1e2130",
-                gap: 12,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
                 <ConfidenceBadge value={e.confidence} />
-                {e.confidenceReason && (
-                  <span style={{ fontSize: 11, color: "#9ca3b0" }}>
-                    {e.confidenceReason}
-                  </span>
-                )}
+                <span style={{ fontSize: 10, color: "#9ca3b0" }}>
+                  {new Date(e.processedAt).toLocaleString()}
+                </span>
               </div>
-              <span style={{ fontSize: 10, color: "#9ca3b0", whiteSpace: "nowrap" }}>
-                {new Date(e.processedAt).toLocaleString()}
-              </span>
+              {e.confidenceReason && (
+                <span
+                  style={{ fontSize: 11, color: "#9ca3b0", lineHeight: 1.4 }}
+                >
+                  {e.confidenceReason}
+                </span>
+              )}
             </div>
 
-            <div style={{ padding: "12px 16px" }}>
+            <div style={{ padding: "10px 14px" }}>
               {/* Changes summary */}
               <div
                 style={{
@@ -1374,6 +1520,7 @@ function ProcessingLogView({
                   color: "#00e5a0",
                   marginBottom: 8,
                   fontWeight: 500,
+                  lineHeight: 1.4,
                 }}
               >
                 {e.changesSummary}
@@ -1403,7 +1550,12 @@ function ProcessingLogView({
           </div>
         )}
       </div>
-      <Pagination total={total} offset={offset} pageSize={PAGE_SIZE} onPage={onPage} />
+      <Pagination
+        total={total}
+        offset={offset}
+        pageSize={PAGE_SIZE}
+        onPage={onPage}
+      />
     </div>
   );
 }

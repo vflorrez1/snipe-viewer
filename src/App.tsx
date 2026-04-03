@@ -1,5 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
-import type { Trade, TradeForm as TradeFormType, ValidationErrors, ImportResult } from "./types/trade";
+import type {
+  Trade,
+  TradeForm as TradeFormType,
+  ValidationErrors,
+  ImportResult,
+} from "./types/trade";
 import { SAMPLE_TRADES, SAMPLE_JSON, EMPTY_TRADE } from "./data/constants";
 import { validateTrade, normaliseTrade, isOpen, pnl } from "./utils/trade";
 import Header from "./components/Header";
@@ -18,16 +23,23 @@ export default function App() {
   const [form, setForm] = useState<TradeFormType>(EMPTY_TRADE);
   const [editId, setEditId] = useState<number | string | null>(null);
   const [tab, setTab] = useState("portfolio");
-  const [portfolioSubTab, setPortfolioSubTab] = useState<PortfolioSubTab>("overview");
+  const [portfolioSubTab, setPortfolioSubTab] =
+    useState<PortfolioSubTab>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const handleSidebarChange = useCallback((open: boolean) => setSidebarOpen(open), []);
+  const handleSidebarChange = useCallback(
+    (open: boolean) => setSidebarOpen(open),
+    [],
+  );
   const [jsonText, setJsonText] = useState(SAMPLE_JSON);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [formErrors, setFormErrors] = useState<ValidationErrors>({});
 
   const sorted = useMemo(
-    () => [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
-    [trades]
+    () =>
+      [...trades].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      ),
+    [trades],
   );
 
   const stats = useMemo(() => {
@@ -39,9 +51,13 @@ export default function App() {
       losses = 0,
       totalPnl = 0,
       totalFees = 0;
-    const curve: Array<{ date: string; equity: number; pnl?: number; pair?: string; side?: string }> = [
-      { date: "Start", equity: 10000 },
-    ];
+    const curve: Array<{
+      date: string;
+      equity: number;
+      pnl?: number;
+      pair?: string;
+      side?: string;
+    }> = [{ date: "Start", equity: 10000 }];
     const openCount = sorted.filter(isOpen).length;
 
     sorted.forEach((t) => {
@@ -68,11 +84,17 @@ export default function App() {
     const winRate = closedCount ? (wins / closedCount) * 100 : 0;
     const avgWin =
       sorted
-        .filter((t) => { const p = pnl(t); return p !== null && p > 0; })
+        .filter((t) => {
+          const p = pnl(t);
+          return p !== null && p > 0;
+        })
         .reduce((s, t) => s + pnl(t)!, 0) / (wins || 1);
     const avgLoss =
       sorted
-        .filter((t) => { const p = pnl(t); return p !== null && p < 0; })
+        .filter((t) => {
+          const p = pnl(t);
+          return p !== null && p < 0;
+        })
         .reduce((s, t) => s + pnl(t)!, 0) / (losses || 1);
 
     return {
@@ -147,9 +169,16 @@ export default function App() {
     setFormErrors(errors);
     if (Object.keys(errors).length) return;
 
-    const t: Trade = { ...draft, id: Date.now(), fee: 0, exchange: "" } as Trade;
+    const t: Trade = {
+      ...draft,
+      id: Date.now(),
+      fee: 0,
+      exchange: "",
+    } as Trade;
     if (editId) {
-      setTrades(trades.map((x) => (x.id === editId ? { ...t, id: editId } : x)));
+      setTrades(
+        trades.map((x) => (x.id === editId ? { ...t, id: editId } : x)),
+      );
       setEditId(null);
     } else {
       setTrades([...trades, t]);
@@ -190,17 +219,21 @@ export default function App() {
           transition: "margin-left 0.25s ease",
         }}
       >
-        <Header stats={stats} tradeCount={trades.length} />
+        {tab !== "portfolio" && (
+          <Header stats={stats} tradeCount={trades.length} />
+        )}
 
         {tab === "trades" && (
           <>
-          {stats && <StatsGrid stats={stats} />}
-          {stats && stats.curve.length > 1 && <EquityCurve curve={stats.curve} />}
-          <TradesTable
-            sorted={sorted}
-            onEdit={startEdit}
-            onDelete={(id) => setTrades(trades.filter((x) => x.id !== id))}
-          />
+            {stats && <StatsGrid stats={stats} />}
+            {stats && stats.curve.length > 1 && (
+              <EquityCurve curve={stats.curve} />
+            )}
+            <TradesTable
+              sorted={sorted}
+              onEdit={startEdit}
+              onDelete={(id) => setTrades(trades.filter((x) => x.id !== id))}
+            />
           </>
         )}
 
@@ -234,20 +267,11 @@ export default function App() {
         )}
 
         {tab === "portfolio" && (
-          <PortfolioDashboard subTab={portfolioSubTab} setSubTab={setPortfolioSubTab} />
+          <PortfolioDashboard
+            subTab={portfolioSubTab}
+            setSubTab={setPortfolioSubTab}
+          />
         )}
-
-        <div
-          style={{
-            marginTop: 28,
-            fontSize: 10,
-            color: "#b0b5c0",
-            letterSpacing: "0.08em",
-          }}
-        >
-          BACKTEST SIMULATOR · STARTING CAPITAL $10,000 · FEES DEDUCTED FROM P&L
-          WHERE PROVIDED
-        </div>
       </div>
     </div>
   );

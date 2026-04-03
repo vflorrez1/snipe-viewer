@@ -277,9 +277,12 @@ export default function TabBar({
       <div
         style={{
           position: "fixed",
-          top: 16,
-          left: 16,
+          top: 0,
+          left: 0,
+          right: 0,
           zIndex: 997,
+          padding: "16px 16px",
+          background: "#080a0f",
           fontSize: 14,
           color: "#00e5a0",
           letterSpacing: "0.1em",
@@ -446,7 +449,7 @@ export default function TabBar({
             border: "none",
             fontSize: open ? 22 : 20,
             fontWeight: 700,
-            fontFamily: "inherit",
+            fontFamily: "system-ui, sans-serif",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -454,6 +457,8 @@ export default function TabBar({
             boxShadow: "0 4px 24px rgba(0,229,160,0.25)",
             marginLeft: "auto",
             transition: "background 0.2s, color 0.2s",
+            lineHeight: 1,
+            padding: 0,
           }}
         >
           {open ? "\u2715" : "\u2630"}
