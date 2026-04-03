@@ -107,3 +107,25 @@ textarea {
   border-color: #00e5a0;
   background: #00e5a008;
 }
+
+@media (max-width: 639px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

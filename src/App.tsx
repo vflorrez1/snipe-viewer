@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { Trade, TradeForm as TradeFormType, ValidationErrors, ImportResult } from "./types/trade";
 import { SAMPLE_TRADES, SAMPLE_JSON, EMPTY_TRADE } from "./data/constants";
 import { validateTrade, normaliseTrade, isOpen, pnl } from "./utils/trade";
@@ -9,13 +9,18 @@ import TabBar from "./components/TabBar";
 import TradesTable from "./components/TradesTable";
 import JsonImport from "./components/JsonImport";
 import TradeForm from "./components/TradeForm";
+import PortfolioDashboard from "./components/PortfolioDashboard";
+import type { PortfolioSubTab } from "./components/PortfolioDashboard";
 import "./App.css";
 
 export default function App() {
   const [trades, setTrades] = useState<Trade[]>(SAMPLE_TRADES);
   const [form, setForm] = useState<TradeFormType>(EMPTY_TRADE);
   const [editId, setEditId] = useState<number | string | null>(null);
-  const [tab, setTab] = useState("trades");
+  const [tab, setTab] = useState("portfolio");
+  const [portfolioSubTab, setPortfolioSubTab] = useState<PortfolioSubTab>("overview");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const handleSidebarChange = useCallback((open: boolean) => setSidebarOpen(open), []);
   const [jsonText, setJsonText] = useState(SAMPLE_JSON);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [formErrors, setFormErrors] = useState<ValidationErrors>({});
@@ -169,23 +174,34 @@ export default function App() {
 
   return (
     <div className="app-root">
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <TabBar
+        tab={tab}
+        setTab={setTab}
+        editId={editId}
+        portfolioSubTab={portfolioSubTab}
+        setPortfolioSubTab={setPortfolioSubTab}
+        onSidebarChange={handleSidebarChange}
+      />
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: "0 auto",
+          marginLeft: sidebarOpen ? 240 : "auto",
+          transition: "margin-left 0.25s ease",
+        }}
+      >
         <Header stats={stats} tradeCount={trades.length} />
 
-        {stats && <StatsGrid stats={stats} />}
-
-        {stats && stats.curve.length > 1 && (
-          <EquityCurve curve={stats.curve} />
-        )}
-
-        <TabBar tab={tab} setTab={setTab} editId={editId} />
-
         {tab === "trades" && (
+          <>
+          {stats && <StatsGrid stats={stats} />}
+          {stats && stats.curve.length > 1 && <EquityCurve curve={stats.curve} />}
           <TradesTable
             sorted={sorted}
             onEdit={startEdit}
             onDelete={(id) => setTrades(trades.filter((x) => x.id !== id))}
           />
+          </>
         )}
 
         {tab === "import" && (
@@ -215,6 +231,10 @@ export default function App() {
               setTab("trades");
             }}
           />
+        )}
+
+        {tab === "portfolio" && (
+          <PortfolioDashboard subTab={portfolioSubTab} setSubTab={setPortfolioSubTab} />
         )}
 
         <div
