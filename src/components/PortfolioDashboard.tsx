@@ -894,53 +894,59 @@ function OpenPositionsTable({ positions, channelId }: { positions: OpenPosition[
             )}
           </div>
 
-          <div style={{ padding: "12px 18px" }}>
+          <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Entries */}
             {pos.entries.length > 0 && (
-              <div style={{ marginBottom: 12 }}>
+              <div>
                 <div
                   style={{
                     fontSize: 9,
-                    color: "#b0b5c0",
+                    color: "#6b7080",
                     letterSpacing: "0.1em",
-                    marginBottom: 6,
+                    marginBottom: 10,
                   }}
                 >
                   ENTRIES
                 </div>
-                {pos.entries.map((e, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      gap: 16,
-                      fontSize: 12,
-                      color: "#9ca3b0",
-                      marginBottom: 4,
-                    }}
-                  >
-                    <span style={{ color: "#e8eaf0" }}>
-                      {e.price != null ? `$${e.price}` : "--"}
-                    </span>
-                    {e.size && <span>Size: {e.size}</span>}
-                    <span>{new Date(e.timestamp).toLocaleString()}</span>
-                  </div>
-                ))}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {pos.entries.map((e, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        background: "#0d0f14",
+                        borderRadius: 8,
+                        padding: "10px 12px",
+                        borderLeft: "3px solid #5b8def",
+                      }}
+                    >
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", marginBottom: 4 }}>
+                        {e.price != null ? `$${e.price}` : "Limit (unfilled)"}
+                      </div>
+                      <div style={{ display: "flex", gap: 12, fontSize: 11, color: "#6b7080" }}>
+                        {e.size && e.size !== "unknown" && (
+                          <span>Size: {e.size}</span>
+                        )}
+                        <span>{new Date(e.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</span>
+                        <span>{new Date(e.timestamp).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
             {/* Take profit levels */}
             {pos.takeProfitLevels.length > 0 && (
-              <div style={{ marginBottom: 12 }}>
+              <div>
                 <div
                   style={{
                     fontSize: 9,
-                    color: "#b0b5c0",
+                    color: "#6b7080",
                     letterSpacing: "0.1em",
-                    marginBottom: 6,
+                    marginBottom: 10,
                   }}
                 >
-                  TAKE PROFIT LEVELS
+                  TAKE PROFIT
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {pos.takeProfitLevels.map((tp, i) => (
@@ -951,13 +957,21 @@ function OpenPositionsTable({ positions, channelId }: { positions: OpenPosition[
                           tp.status === "HIT" ? "#00e5a015" : "#1e2130",
                         border: `1px solid ${tp.status === "HIT" ? "#00e5a040" : "#2a2d3a"}`,
                         borderRadius: 6,
-                        padding: "4px 10px",
-                        fontSize: 11,
-                        color: tp.status === "HIT" ? "#00e5a0" : "#9ca3b0",
+                        padding: "6px 12px",
+                        fontSize: 12,
+                        color: tp.status === "HIT" ? "#00e5a0" : "#b0b5c0",
+                        fontWeight: 500,
                       }}
                     >
-                      {tp.price != null ? `$${tp.price}` : "--"} ({tp.portion}){" "}
-                      {tp.status === "HIT" && "HIT"}
+                      {tp.price != null ? `$${tp.price}` : "--"}
+                      {tp.portion && tp.portion !== "unknown" && (
+                        <span style={{ color: "#6b7080", fontWeight: 400, marginLeft: 4, fontSize: 10 }}>
+                          {tp.portion}
+                        </span>
+                      )}
+                      {tp.status === "HIT" && (
+                        <span style={{ marginLeft: 4 }}>{"\u2713"}</span>
+                      )}
                     </span>
                   ))}
                 </div>
@@ -967,7 +981,14 @@ function OpenPositionsTable({ positions, channelId }: { positions: OpenPosition[
             {/* Notes */}
             {pos.notes && (
               <div
-                style={{ fontSize: 11, color: "#9ca3b0", fontStyle: "italic" }}
+                style={{
+                  background: "#0d0f14",
+                  borderRadius: 8,
+                  padding: "10px 12px",
+                  fontSize: 11,
+                  color: "#7a8090",
+                  lineHeight: 1.6,
+                }}
               >
                 {pos.notes}
               </div>
