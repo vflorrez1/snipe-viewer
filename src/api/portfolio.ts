@@ -103,6 +103,48 @@ interface Paginated<T> {
   items: T[];
 }
 
+// --- Chart types ---
+
+export type Timeframe = "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "1d" | "1w";
+
+export interface Candle {
+  timestamp: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface ChartOverlayEntry {
+  price: number | null;
+  timestamp: string;
+  label: string;
+}
+
+export interface ChartOverlayTP {
+  price: number | null;
+  status: "OPEN" | "HIT";
+  portion: string;
+}
+
+export interface ChartOverlays {
+  entries: ChartOverlayEntry[];
+  stopLoss: number | null;
+  takeProfitLevels: ChartOverlayTP[];
+  currentPrice: number | null;
+}
+
+export interface PositionChartData {
+  positionId: string;
+  asset: string;
+  symbol: string;
+  direction: "LONG" | "SHORT";
+  timeframe: string;
+  candles: Candle[];
+  overlays: ChartOverlays;
+}
+
 // --- Fetch helpers ---
 
 async function apiFetch<T>(path: string): Promise<T> {
@@ -151,6 +193,17 @@ export async function fetchProcessingLog(
   if (opts.endDate) params.set("endDate", opts.endDate);
   const qs = params.toString();
   return apiFetch(`/portfolio/channels/${channelId}/processing-log${qs ? `?${qs}` : ""}`);
+}
+
+export async function fetchPositionChart(
+  channelId: string,
+  positionId: string,
+  timeframe?: Timeframe
+): Promise<PositionChartData> {
+  const qs = timeframe ? `?timeframe=${timeframe}` : "";
+  return apiFetch(
+    `/portfolio/channels/${channelId}/positions/${positionId}/chart${qs}`
+  );
 }
 
 export async function fetchTrades(

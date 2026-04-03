@@ -24,6 +24,7 @@ import {
   fetchProcessingLog,
   fetchTrades,
 } from "../api/portfolio";
+import PositionChart from "./PositionChart";
 
 export type PortfolioSubTab =
   | "overview"
@@ -375,11 +376,12 @@ export default function PortfolioDashboard({
             <StatsOverview
               stats={overview.stats}
               closedTrades={overview.closedTrades}
+              onOpenPositionsClick={() => setSubTab("positions")}
             />
           )}
 
           {!loading && subTab === "positions" && overview && (
-            <OpenPositionsTable positions={overview.openPositions} />
+            <OpenPositionsTable positions={overview.openPositions} channelId={activeChannel} />
           )}
 
           {!loading && subTab === "trades" && (
@@ -646,11 +648,13 @@ function PortfolioEquityCurve({
 function StatsOverview({
   stats,
   closedTrades,
+  onOpenPositionsClick,
 }: {
   stats: PortfolioStats;
   closedTrades: ClosedTrade[];
+  onOpenPositionsClick?: () => void;
 }) {
-  const cards = [
+  const cards: { label: string; value: string; color: string; onClick?: () => void }[] = [
     {
       label: "TOTAL TRADES",
       value: String(stats.totalTrades),
@@ -660,6 +664,7 @@ function StatsOverview({
       label: "OPEN POSITIONS",
       value: String(stats.openTradeCount),
       color: stats.openTradeCount > 0 ? "#ff9f43" : "#b0b5c0",
+      onClick: onOpenPositionsClick,
     },
     {
       label: "WIN RATE",
@@ -721,7 +726,12 @@ function StatsOverview({
         }}
       >
         {cards.map((s) => (
-          <div key={s.label} className="stat-card">
+          <div
+            key={s.label}
+            className="stat-card"
+            onClick={s.onClick}
+            style={s.onClick ? { cursor: "pointer" } : undefined}
+          >
             <div
               style={{
                 fontSize: 9,
@@ -821,7 +831,9 @@ function StatsOverview({
   );
 }
 
-function OpenPositionsTable({ positions }: { positions: OpenPosition[] }) {
+function OpenPositionsTable({ positions, channelId }: { positions: OpenPosition[]; channelId: string }) {
+  const [chartPositionId, setChartPositionId] = useState<string | null>(null);
+
   if (!positions.length) {
     return (
       <div style={{ padding: 40, textAlign: "center", color: "#b0b5c0" }}>
@@ -837,11 +849,19 @@ function OpenPositionsTable({ positions }: { positions: OpenPosition[] }) {
         gap: 12,
       }}
     >
+      {chartPositionId && (
+        <PositionChart
+          channelId={channelId}
+          positionId={chartPositionId}
+          onClose={() => setChartPositionId(null)}
+        />
+      )}
       {positions.map((pos) => (
         <div
           key={pos.id}
           className="stat-card"
-          style={{ padding: 0, overflow: "hidden" }}
+          style={{ padding: 0, overflow: "hidden", cursor: "pointer" }}
+          onClick={() => setChartPositionId(pos.id)}
         >
           {/* Position header */}
           <div
